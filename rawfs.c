@@ -1,33 +1,8 @@
 #include "rawfs.h"
-#include "controlstruct.h"
 
 #include <math.h>
 
 // ------------------- implementation --------------------------
-
-raw_err rawfs_open_device(const uint8* file)
-{
-  if(file == NULL)
-    return ERR_NULLPTR;
-
-  if(open_fs != NULL)
-    fclose(open_fs);
-
-  if((open_fs = fopen(file, "w+b")) == NULL)
-    return ERR_IO;
-
-  return SUCCESS;
-}
-
-raw_err rawfs_close_device()
-{
-  if(open_fs == NULL)
-    return SUCCESS;
-
-  fclose(open_fs);
-  open_fs = NULL;
-  return SUCCESS;
-}
 
 void rawfs_read_superblock()
 {

@@ -13,6 +13,7 @@ with pointers to blocks with pointers and so on.
 #include <stdio.h>
 
 #include "util.h"
+#include "coreio.h"
 
 // Main struct representing the superblock for the entire partition
 

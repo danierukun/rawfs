@@ -1,6 +1,30 @@
 #include "coreio.h"
 #include <stdio.h>
 
+raw_err coreio_open_device(const uint8* file)
+{
+  if(file == NULL)
+    return ERR_NULLPTR;
+
+  if(open_fs != NULL)
+    fclose(open_fs);
+
+  if((open_fs = fopen(file, "w+b")) == NULL)
+    return ERR_IO;
+
+  return SUCCESS;
+}
+
+raw_err coreio_close_device()
+{
+  if(open_fs == NULL)
+    return SUCCESS;
+
+  fclose(open_fs);
+  open_fs = NULL;
+  return SUCCESS;
+}
+
 uint32 coreio_read_block(void* data, uint32 block_qty, uint32 block_id)
 {
 #ifdef FS_DEBUG_ON

@@ -1,4 +1,5 @@
 #include "inode.h"
+#include "coreio.h"
 
 #ifdef FS_DEBUG_ON
 #include <stdio.h>
@@ -16,8 +17,13 @@ inode inode_get_inode(uint32 inode_id)
 #endif
 
   if(open_fs == NULL)
-    return 0;
-
+    {
+#ifdef FS_DEBUG_ON
+      printf("Filesystem not initialized. Exit.\n");
+#endif
+      tmp.mode = IFINVALID;
+      return tmp;
+    }
   fseek(open_fs, (sb.inode_table * BLOCK_SIZE) + (inode_id * sizeof(inode)), SEEK_SET);
 
   fread(&tmp, sizeof(inode), 1, open_fs);

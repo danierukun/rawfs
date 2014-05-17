@@ -1,6 +1,10 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "control.h"
 
-superblock* control_construct_superblock(uint32 )
+superblock* control_construct_superblock(uint32 block)
 {
   superblock* s = NULL;
   int32 byte_qty = 0;

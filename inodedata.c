@@ -1,8 +1,14 @@
 #include "inodedata.h"
+#include "coreio.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 
 
 // -------------- Static function forward declarations ---------------
-static offset_container inode_calculate_offsets(uint32 block_id);
+static offset_container inodedata_calculate_offsets(uint32 block_id);
 // -------------------------------------------------------------------
 
 
@@ -19,7 +25,7 @@ uint8* inodedata_read_block(inode cur_inode, uint32 block_id)
   printf("In function inode_read_block: \n");
 #endif
 
-  if(!inode_is_valid(cur_inode))
+  if(!inode_is_valid(cur_inode.inode_id))
     {
 #ifdef FS_DEBUG_ON
       printf("Invalid inode. Exit.");
@@ -27,7 +33,7 @@ uint8* inodedata_read_block(inode cur_inode, uint32 block_id)
       return NULL;
     }
 
-  offset = inode_calculate_offsets(block_id);
+  offset = inodedata_calculate_offsets(block_id);
 
 #ifdef FS_DEBUG_ON
 
@@ -81,7 +87,13 @@ int8 inodedata_write_block(void* data, uint32 data_size, inode cur_inode)
     }
 
   if(cur_inode.block_span >= (pow(BLOCK_SIZE / 4, 3) + pow(BLOCK_SIZE / 4, 2) + (BLOCK_SIZE / 4) + 12))
-    return -1;
+    {
+#ifdef FS_DEBUG_ON
+      printf("Max inode data block quantity exceeded. Exit.");
+#endif
+
+      return -1;
+    }
 
   while(data_size > 0)
     {
@@ -99,7 +111,7 @@ int8 inodedata_write_block(void* data, uint32 data_size, inode cur_inode)
       printf("Free block found at address %d\n", block_addr);
 #endif
       
-      offset = inode_calculate_offset(cur_inode.block_span);
+      offset = inodedata_calculate_offsets(cur_inode.block_span);
 
       if(!coreio_write_block(data, BLOCK_SIZE, block_addr))
 	{
@@ -137,7 +149,7 @@ int8 inodedata_deallocate_block(inode cur_inode, uint32 block_id)
   printf("In function inode_deallocate_block: \n");
 #endif
 
-  if(cur_inode == NULL)
+  if(cur_inode.mode == IFINVALID)
     {
 #ifdef FS_DEBUG_ON
       printf("Null pointer received. Return.\n");
@@ -146,7 +158,7 @@ int8 inodedata_deallocate_block(inode cur_inode, uint32 block_id)
       return -1;
     }
 
-  offset = inode_calculate_offsets(block_id);
+  offset = inodedata_calculate_offsets(block_id);
 
   blk_disk_addr = inode_traverse_indirect_blocks(cur_inode, offset);
 
@@ -161,6 +173,7 @@ uint32 inodedata_traverse_indirect_blocks(inode cur_inode, offset_container offs
 {
   uint8* data = NULL;
   uint32 cur_blk_addr = 0;
+  uint32 i = 0;
 
 #ifdef FS_DEBUG_ON
   printf("In function inode_traverse_indirect_blocks: \n");
@@ -181,13 +194,13 @@ uint32 inodedata_traverse_indirect_blocks(inode cur_inode, offset_container offs
 
   for(i = 1; i < offset.indirection_lvl; i++)
     {
-      cur_blk_addr = util_char_array_to_int(data[offset.indirection_index[i]]);
+      cur_blk_addr = util_char_array_to_int(data + offset.indirection_index[i]);
       
 #ifdef FS_DEBUG_ON
       printf("Attempting to read disk block %d\n", block_addr);
-      printf(" Read status: %d\n", coreio_read_block(data, 1, block_addr));
+      printf(" Read status: %d\n", coreio_read_block(data, 1, cur_blk_addr));
 #else
-      coreio_read_block(data, 1, block_addr);
+      coreio_read_block(data, 1, cur_blk_addr);
 #endif
     }
 
@@ -205,7 +218,7 @@ uint32 inodedata_traverse_indirect_blocks(inode cur_inode, offset_container offs
 /*
   calculates the indirection offsets of a single block inside an inode
 */
-static offset_container inode_calculate_offsets(uint32 block_id)
+static offset_container inodedata_calculate_offsets(uint32 block_id)
 {
   offset_container c = {0};
   uint32 pointer_size = BLOCK_SIZE / 4;

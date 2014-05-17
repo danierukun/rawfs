@@ -1,7 +1,7 @@
 #ifndef INODE_H
 #define INODE_H
 
-#include "control.h"
+#include "util.h"
 
 #define BLOCK_INODE_RATIO 64
 
@@ -37,7 +37,8 @@ typedef struct
 typedef enum
   {
     IFREG,
-    IFDIR
+    IFDIR,
+    IFINVALID
   } inode_mode;
 
 inode inode_get_inode(uint32 inode_id);
