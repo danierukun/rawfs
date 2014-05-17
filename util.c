@@ -31,7 +31,7 @@ uint32 util_array_bit_alter(void* data_array, uint32 start_bit, uint32 end_bit, 
   switch(m)
     {
     case BIT_CLEAR:
-      first_byte_mask = 0xFF << 8 - (start_bit % 8);
+      first_byte_mask = 0xFF << (8 - (start_bit % 8));
       last_byte_mask = 0xFF >> end_bit % 8;
       data_fill = 0;
       data[0] = data[0] & first_byte_mask;
@@ -40,7 +40,7 @@ uint32 util_array_bit_alter(void* data_array, uint32 start_bit, uint32 end_bit, 
 
     case BIT_SET:
       first_byte_mask = 0xFF >> start_bit % 8;
-      last_byte_mask = 0xFF << 8 - (end_bit % 8);
+      last_byte_mask = 0xFF << (8 - (end_bit % 8));
       data_fill = 0xFF;
       data[0] = data[0] | first_byte_mask;
       data[array_size - 1] = data[array_size - 1] | last_byte_mask;

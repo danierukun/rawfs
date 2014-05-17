@@ -14,11 +14,11 @@ superblock* control_construct_superblock(uint32 block)
 #endif
 
   if(open_fs == NULL)
-    return;
+    return NULL;
 
   s = malloc(sizeof(superblock));
 
-  fseek(open_fs,0,SEEK_END);
+  coreio_fseek(open_fs,0,SEEK_END);
   byte_qty = ftell(open_fs);
   rewind(open_fs);
 
@@ -58,16 +58,16 @@ uint8 control_modify_inode_bitmap(uint32 blk_id, bit_edit_mode m)
   printf("In function control_modify_inode_bitmap: \n");
 #endif
 
-  fseek(open_fs, (sb.inode_bitmap * BLOCK_SIZE) + (blk_id / 8), SEEK_SET);
+  coreio_fseek(open_fs, (sb.inode_bitmap * BLOCK_SIZE) + (blk_id / 8), SEEK_SET);
 
-  if(!fread(&data, sizeof(uint8), 1, open_fs))
+  if(!coreio_fread(&data, sizeof(uint8), 1, open_fs))
     return -1;
 
   util_array_bit_alter(&data, blk_id, blk_id, 1, m);
 
-  fseek(open_fs, -1, SEEK_CUR);
+  coreio_fseek(open_fs, -1, SEEK_CUR);
 
-  fwrite(&data, sizeof(uint8), 1, open_fs);
+  coreio_fwrite(&data, sizeof(uint8), 1, open_fs);
 
   return 0;
 }
@@ -80,16 +80,16 @@ uint8 control_modify_blk_bitmap(uint32 blk_id, bit_edit_mode m)
   printf("In function control_modify_blk_bitmap: \n");
 #endif
 
-  fseek(open_fs, (sb.block_table * BLOCK_SIZE) + (blk_id / 8), SEEK_SET);
+  coreio_fseek(open_fs, (sb.block_table * BLOCK_SIZE) + (blk_id / 8), SEEK_SET);
 
-  if(!fread(&data, sizeof(uint8), 1, open_fs))
+  if(!coreio_fread(&data, sizeof(uint8), 1, open_fs))
     return -1;
 
   util_array_bit_alter(&data, blk_id, blk_id, 1, m);
 
-  fseek(open_fs, -1, SEEK_CUR);
+  coreio_fseek(open_fs, -1, SEEK_CUR);
 
-  fwrite(&data, sizeof(uint8), 1, open_fs);
+  coreio_fwrite(&data, sizeof(uint8), 1, open_fs);
 
   return 0;
 }

@@ -45,5 +45,7 @@ inode inode_get_inode(uint32 inode_id);
 uint8 inode_is_valid(uint32 inode_id);
 int8 inode_set_valid(uint32 inode_id);
 uint8 inode_set_invalid(uint32 inode_id);
+int8 inode_overwrite_inode(inode source_inode);
+uint32 inode_find_free_inode();
 
 #endif

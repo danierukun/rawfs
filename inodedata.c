@@ -1,5 +1,7 @@
 #include "inodedata.h"
 #include "coreio.h"
+#include "inode.h"
+#include "control.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,6 +11,7 @@
 
 // -------------- Static function forward declarations ---------------
 static offset_container inodedata_calculate_offsets(uint32 block_id);
+static void inodedata_relate_block_to_inode(uint32 block_addr, offset_container offset, inode target_inode);
 // -------------------------------------------------------------------
 
 
@@ -55,7 +58,7 @@ uint8* inodedata_read_block(inode cur_inode, uint32 block_id)
       return NULL;
     }
 
-  blk_disk_addr = inode_traverse_indirect_blocks(cur_inode, offset);
+  blk_disk_addr = inodedata_traverse_indirect_blocks(cur_inode, offset);
  
 #ifdef FS_DEBUG_ON
   printf("Block address to read: %d\n", blk_disk_addr);
@@ -121,6 +124,8 @@ int8 inodedata_write_block(void* data, uint32 data_size, inode cur_inode)
 	  return -2;
 	}
 
+      inodedata_relate_block_to_inode(block_addr, offset, cur_inode);
+
       cur_inode.block_span++;
 
 #ifdef FS_DEBUG_ON
@@ -141,7 +146,6 @@ int8 inodedata_write_block(void* data, uint32 data_size, inode cur_inode)
 */
 int8 inodedata_deallocate_block(inode cur_inode, uint32 block_id)
 {
-  uint8* data = NULL;
   uint32 blk_disk_addr = 0;
   offset_container offset = {0};
 
@@ -160,9 +164,11 @@ int8 inodedata_deallocate_block(inode cur_inode, uint32 block_id)
 
   offset = inodedata_calculate_offsets(block_id);
 
-  blk_disk_addr = inode_traverse_indirect_blocks(cur_inode, offset);
+  blk_disk_addr = inodedata_traverse_indirect_blocks(cur_inode, offset);
 
   control_modify_blk_bitmap(blk_disk_addr, BIT_CLEAR);
+
+  return 0;
 }
 
 /*
@@ -182,6 +188,14 @@ uint32 inodedata_traverse_indirect_blocks(inode cur_inode, offset_container offs
 #ifdef FS_DEBUG_ON
   printf("Attempting to allocate data buffer of %d bytes.\n", BLOCK_SIZE);
 #endif
+
+  if(offset.indirection_lvl == 0)
+    {
+#ifdef FS_DEBUG_ON
+      printf("Indirection lvl 0. Returning offset index 0.\n");
+#endif
+      return offset.indirection_index[0];
+    }
 
   data = malloc(BLOCK_SIZE);
 
@@ -224,7 +238,7 @@ static offset_container inodedata_calculate_offsets(uint32 block_id)
   uint32 pointer_size = BLOCK_SIZE / 4;
 
 #ifdef FS_DEBUG_ON
-  printf("In function inode_calculate_offsets: \n");
+  printf("In function inodedata_calculate_offsets: \n");
 #endif
 
   if(block_id < 12)
@@ -268,4 +282,30 @@ static offset_container inodedata_calculate_offsets(uint32 block_id)
   c.indirection_lvl = -1;
 
   return c;
+}
+
+static void inodedata_relate_block_to_inode(uint32 block_addr, offset_container offset, inode target_inode)
+{
+  uint32 pointer = 0;
+
+#ifdef FS_DEBUG_ON
+  printf("In function inodedata_relate_block_to_inode: \n");
+#endif
+
+  if(offset.indirection_lvl < 0 || target_inode.mode == IFINVALID)
+    {
+#ifdef FS_DEBUG_ON
+      printf("Either offset or inode are invalid. Exit.\n");
+#endif
+
+      return;
+    }
+
+  pointer = inodedata_traverse_indirect_blocks(target_inode, offset);
+
+  coreio_fseek(open_fs, pointer * BLOCK_SIZE,SEEK_SET);
+
+  coreio_fwrite(&block_addr, 1, sizeof(uint32), open_fs);
+
+  return;
 }

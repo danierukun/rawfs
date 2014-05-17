@@ -4,18 +4,9 @@
 
 // ------------------- implementation --------------------------
 
-void rawfs_read_superblock()
-{
-  if(open_fs == NULL)
-    return;
-
-  fread(&sb, sizeof(superblock), 1, open_fs);
-
-  return;
-}
-
 uint32 rawfs_create_file(const uint8* path)
 {
+
 }
 
 raw_err rawfs_delete_file(const uint8* path)

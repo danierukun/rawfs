@@ -35,5 +35,8 @@ raw_err coreio_open_device(const uint8* file);
 raw_err coreio_close_device();
 uint32 coreio_read_block(void* data, uint32 block_qty, uint32 block_id);
 uint32 coreio_write_block(const void* data, uint32 d_size, uint32 block_id);
+uint32 coreio_fread(void* ptr, uint32 size, uint32 nmemb, FILE* stream);
+uint32 coreio_fwrite(const void* ptr, uint32 size, uint32 nmemb, FILE* stream);
+uint32 coreio_fseek(FILE* stream, long offset, uint32 whence);
 
 #endif
