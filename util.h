@@ -21,6 +21,7 @@ typedef enum
  * Alters an array at bit level to set or clear subsequent bits.
  */
 
+uint32 util_char_array_to_int(const uint8* array);
 uint32 util_array_bit_alter(void* data_array, uint32 start_bit, uint32 end_bit,uint32 array_size, bit_edit_mode m);
 
 #endif

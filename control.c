@@ -5,6 +5,10 @@ superblock* control_construct_superblock(uint32 )
   superblock* s = NULL;
   int32 byte_qty = 0;
 
+#ifdef FS_DEBUG_ON
+  printf("In function control_construct_superblock: \n");
+#endif
+
   if(open_fs == NULL)
     return;
 
@@ -26,6 +30,10 @@ void control_init_bitmap(uint32 start_block, uint32 bitmap_size)
   uint8* bitmap = NULL;
   uint32 bm_size = 0;
 
+#ifdef FS_DEBUG_ON
+  printf("In function control_init_bitmap: \n");
+#endif
+
   bm_size = bitmap_size / 8;
 
   if((bitmap_size % 8) != 0)
@@ -41,6 +49,10 @@ void control_init_bitmap(uint32 start_block, uint32 bitmap_size)
 uint8 control_modify_inode_bitmap(uint32 blk_id, bit_edit_mode m)
 {
   uint8 data = 0;
+
+#ifdef FS_DEBUG_ON
+  printf("In function control_modify_inode_bitmap: \n");
+#endif
 
   fseek(open_fs, (sb.inode_bitmap * BLOCK_SIZE) + (blk_id / 8), SEEK_SET);
 
@@ -59,6 +71,10 @@ uint8 control_modify_inode_bitmap(uint32 blk_id, bit_edit_mode m)
 uint8 control_modify_blk_bitmap(uint32 blk_id, bit_edit_mode m)
 {
   uint8 data = 0;
+
+#ifdef FS_DEBUG_ON
+  printf("In function control_modify_blk_bitmap: \n");
+#endif
 
   fseek(open_fs, (sb.block_table * BLOCK_SIZE) + (blk_id / 8), SEEK_SET);
 
@@ -83,6 +99,10 @@ uint32 control_find_free_block()
   uint32 j = 0;
   uint32 k = 0;
   uint8* data = NULL;
+
+#ifdef FS_DEBUG_ON
+  printf("In function control_find_free_block: \n");
+#endif
 
   blk_cntr = blk_cntr / BLOCK_SIZE;
 

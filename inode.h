@@ -7,6 +7,7 @@
 
 typedef struct
 {
+  uint32 inode_id; // Stores the id of the inode, must reflect inode bitmap
   uint8 mode; // defines if inode is file or directory
   uint32 block_span; // number of blocks for this file
   double file_size; // size in bytes of file
@@ -38,5 +39,10 @@ typedef enum
     IFREG,
     IFDIR
   } inode_mode;
+
+inode inode_get_inode(uint32 inode_id);
+uint8 inode_is_valid(uint32 inode_id);
+int8 inode_set_valid(uint32 inode_id);
+uint8 inode_set_invalid(uint32 inode_id);
 
 #endif
