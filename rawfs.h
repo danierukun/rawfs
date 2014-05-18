@@ -14,20 +14,14 @@ with pointers to blocks with pointers and so on.
 
 #include "util.h"
 #include "coreio.h"
+#include "control.h"
 
-// Main struct representing the superblock for the entire partition
-
-
-raw_err rawfs_format(const uint8* file);
-
-raw_err rawfs_open_device(const uint8* file);
-raw_err rawfs_close_device();
-
-uint32 rawfs_create_file(const uint8* path);
-raw_err rawfs_delete_file(const uint8* path);
-raw_err rawfs_read_data(const uint32 inode);
-raw_err rawfs_write_data(uint32 inode, void* data, uint32 data_size);
-raw_err rawfs_get_file_name(uint32 inode);
-raw_err rawfs_get_file_inode(const uint8* path);
+uint32 rawfs_create_file(const uint8* name);
+uint8** rawfs_get_file_list();
+raw_err rawfs_delete_file(const uint8* name);
+uint8* rawfs_get_working_directory();
+raw_err rawfs_set_working_directory(uint32 inode_id);
+raw_err rawfs_read_data(void* data, uint32 block_qty, uint32 block_offset,const uint8* filename);
+raw_err rawfs_write_data(const uint8* name, const void* data, uint32 data_size);
 
 #endif

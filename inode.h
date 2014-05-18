@@ -4,6 +4,7 @@
 #include "util.h"
 
 #define BLOCK_INODE_RATIO 64
+#define FILENAME_SIZE 60
 
 typedef struct
 {
@@ -17,9 +18,7 @@ typedef struct
 typedef struct
 {
   uint32 inode;  // inode asociated to this directory
-  uint16 rec_len;  // displacement to next entry from start of current one
-  uint8 name_len;  // length of the name
-  uint8* name; // the actual name, in ascii
+  uint8 name[FILENAME_SIZE]; // the actual name, in ascii
 } dir_entry; // Special structure to be stored inside a inode
 
 typedef struct

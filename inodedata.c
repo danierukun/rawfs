@@ -72,7 +72,7 @@ uint8* inodedata_read_block(inode cur_inode, uint32 block_id)
 /*
   writes a data array and allocates the resulting blocks to an inode
 */
-int8 inodedata_write_block(void* data, uint32 data_size, inode cur_inode)
+int8 inodedata_write_block(const void* data, uint32 data_size, inode cur_inode)
 {
   uint32 block_addr = 0;
   offset_container offset = {0};

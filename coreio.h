@@ -25,7 +25,8 @@ typedef enum
     ERR_NULLPTR,
     ERR_OPEN,
     ERR_IO,
-    ERR_SPACE
+    ERR_SPACE,
+    ERR_NONEXIST
   } raw_err;
 
 FILE* open_fs;
@@ -38,5 +39,7 @@ uint32 coreio_write_block(const void* data, uint32 d_size, uint32 block_id);
 uint32 coreio_fread(void* ptr, uint32 size, uint32 nmemb, FILE* stream);
 uint32 coreio_fwrite(const void* ptr, uint32 size, uint32 nmemb, FILE* stream);
 uint32 coreio_fseek(FILE* stream, long offset, uint32 whence);
+uint32 coreio_ftell(FILE* stream);
+void coreio_rewind(FILE* stream);
 
 #endif

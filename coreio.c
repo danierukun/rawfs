@@ -62,3 +62,14 @@ uint32 coreio_fseek(FILE* stream, long offset, uint32 whence)
 {
   return fseek(stream, offset, whence);
 }
+
+void coreio_rewind(FILE* stream)
+{
+  rewind(stream);
+  return;
+}
+
+uint32 coreio_ftell(FILE* stream)
+{
+  return ftell(stream);
+}

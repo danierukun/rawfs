@@ -181,5 +181,5 @@ uint32 inode_find_free_inode()
 	}
     }
 
-  return 0;
+  return 0xFFFFFFFF;
 }
