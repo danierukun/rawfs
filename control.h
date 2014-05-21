@@ -20,6 +20,7 @@ void control_set_working_inode(uint32 inode);
 void control_create_directory_inode(inode target_inode);
 void control_add_file_to_directory(const char* name, uint32 target_inode);
 int8 control_remove_file_from_directory(uint32 inode_id);
-
+uint32 control_get_filename_inode(const char* filename);
+uint32 control_get_filename_inode(const char* filename);
 
 #endif

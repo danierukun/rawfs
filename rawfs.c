@@ -23,7 +23,7 @@ uint32 rawfs_create_file(const uint8* name)
 #ifdef FS_DEBUG_ON
       printf("Null string received. Exit.");
 #endif
-    return ERR_NULLPTR;
+    return 0XFFFFFFFF;
     }
 
   inode_id = inode_find_free_inode();
@@ -33,12 +33,14 @@ uint32 rawfs_create_file(const uint8* name)
 #ifdef FS_DEBUG_ON
       printf("No inodes available. Exit.");
 #endif
-      return ERR_SPACE;
+      return inode_id;
     }
 
   inode_set_valid(inode_id);
 
-  return SUCCESS;
+  control_add_file_to_directory(name, inode_id);
+
+  return inode_id;
 }
 
 uint8** rawfs_get_file_list()
@@ -48,13 +50,13 @@ uint8** rawfs_get_file_list()
   int i = 0;
   dir_entry* entry = NULL;
 
-  data = inodedata_read_block(current_dir, 0);
+  names = calloc(1, 1024);
 
-  names = calloc(1, 16);
+  data = inodedata_read_block(current_dir, 0);
 
   entry = (dir_entry*)data;
 
-  for(i = 0; i < 16; i++)
+  for(i = 0; i < 1024; i++)
     {
       names[i] = malloc(FILENAME_SIZE);
       strcpy(names[i], entry->name);

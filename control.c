@@ -304,6 +304,8 @@ int8 control_remove_file_from_directory(uint32 inode_id)
 #endif
       
       inodedata_write_block(data, BLOCK_SIZE, current_dir);
+      free(data);
+      return 0;
     }
   else
     {
@@ -314,7 +316,7 @@ int8 control_remove_file_from_directory(uint32 inode_id)
 
   free(data);
 
-  return 0;
+  return -1;
 }
 
 static int8 control_add_directory_entry(inode target_inode, dir_entry entry)
@@ -355,4 +357,33 @@ static int8 control_add_directory_entry(inode target_inode, dir_entry entry)
   free(data);
 
   return 0;
+}
+
+uint32 control_get_filename_inode(const char* filename)
+{
+  uint8* data = NULL; 
+  int i = 0;
+  int j = 0;
+  dir_entry* entry = NULL;
+
+  for(int i = 0; i < 1024; i++)
+    {
+      data = inodedata_read_block(current_dir, i);
+      
+      entry = (dir_entry*)data;
+      
+      for(j = 0; j < 16; i++)
+	{
+	  if(!strcmp(filename, entry->name))
+	    {
+	      free(data);
+	      return entry->inode;
+	    }
+	}
+    }
+
+  free(data);
+  
+  return 0xFFFFFFFF;
+
 }
