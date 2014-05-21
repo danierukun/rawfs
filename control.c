@@ -5,6 +5,8 @@
 #include "control.h"
 #include "inodedata.h"
 
+inode current_dir = {0};
+
 static int8 control_add_directory_entry(inode target_inode, dir_entry entry);
 
 superblock* control_construct_superblock(uint32 block)
@@ -21,8 +23,12 @@ superblock* control_construct_superblock(uint32 block)
 
   s = malloc(sizeof(superblock));
 
+#ifdef FS_DEBUG_ON
+  printf("Memory allocated.\n");
+#endif
+
   coreio_fseek(open_fs,0,SEEK_END);
-  byte_qty = ftell(open_fs);
+  byte_qty = coreio_ftell(open_fs);
   coreio_rewind(open_fs);
 
   s->block_size = BLOCK_SIZE;
@@ -35,10 +41,19 @@ superblock* control_construct_superblock(uint32 block)
   s->inode_count = s->block_count / BLOCK_INODE_RATIO;
   s->free_inodes = s->inode_count;
 
+#ifdef FS_DEBUG_ON
+  printf("returning superblock\n");
+#endif
+
   return s;
 }
 
-void control_init_bitmap(uint32 start_block, uint32 bitmap_size)
+int8 coreio_init()
+{
+
+}
+
+uint32 control_init_bitmap(uint32 start_block, uint32 bit_qty)
 {
   uint8* bitmap = NULL;
   uint32 bm_size = 0;
@@ -47,16 +62,31 @@ void control_init_bitmap(uint32 start_block, uint32 bitmap_size)
   printf("In function control_init_bitmap: \n");
 #endif
 
-  bm_size = bitmap_size / 8;
+  bm_size = bit_qty / 8;
 
-  if((bitmap_size % 8) != 0)
+  if((bit_qty % 8) != 0)
     bm_size++;
 
   bitmap = malloc(bm_size);
   memset(bitmap, 0, bm_size);
 
-  coreio_write_block(bitmap, bm_size, start_block);
+  return coreio_write_block(bitmap, bm_size, start_block);
 
+}
+
+void control_init_inode_table(uint32 start_block, uint32 inode_qty)
+{
+  uint8* data = NULL;
+
+#ifdef FS_DEBUG_ON
+  printf("In function control_init_inode_table: \n");
+#endif
+
+  data = calloc(inode_qty, sizeof(inode));
+
+  coreio_write_block(data, inode_qty * sizeof(inode), start_block);
+
+  return;
 }
 
 uint8 control_modify_inode_bitmap(uint32 blk_id, bit_edit_mode m)

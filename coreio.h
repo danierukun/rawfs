@@ -29,8 +29,8 @@ typedef enum
     ERR_NONEXIST
   } raw_err;
 
-FILE* open_fs;
-superblock sb = {0};
+extern FILE* open_fs;
+extern superblock sb;
 
 raw_err coreio_open_device(const uint8* file);
 raw_err coreio_close_device();

@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 // #include <stdio.h>
 
 #include "util.h"
@@ -58,4 +59,16 @@ uint32 util_array_bit_alter(void* data_array, uint32 start_bit, uint32 end_bit, 
 
   return array_size;
 
+}
+
+uint32 util_calculate_bitmap_block_span(uint32 bitmap_bit_size)
+{
+  uint32 res = 0;
+
+  res = bitmap_bit_size / 8;
+
+  if((bitmap_bit_size % 8) != 0)
+    res++;
+
+  return res;
 }

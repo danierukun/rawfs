@@ -8,8 +8,11 @@
 
 #define ROOT_INODE_NO 2
 
-inode current_dir = {0};
+extern inode current_dir;
 
+superblock* control_construct_superblock(uint32 block);
+uint32 control_init_bitmap(uint32 start_block, uint32 bit_qty);
+void control_init_inode_table(uint32 start_block, uint32 inode_qty);
 uint8 control_modify_inode_bitmap(uint32 blk_id, bit_edit_mode m);
 uint8 control_modify_blk_bitmap(uint32 blk_id, bit_edit_mode m);
 uint32 control_find_free_block();

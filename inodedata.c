@@ -44,9 +44,9 @@ uint8* inodedata_read_block(inode cur_inode, uint32 block_id)
  
   int dbg_i = 0;
  
-  for(i = 0; dbg_i < offset.indirection_lvl; dbg_i++)
+  for(dbg_i = 0; dbg_i < offset.indirection_lvl; dbg_i++)
     {
-      printf("Indirection index %d: %d\n", i, offset.indirection_index[i]);
+      printf("Indirection index %d: %d\n", dbg_i, offset.indirection_index[dbg_i]);
     }
 #endif
 
@@ -211,7 +211,7 @@ uint32 inodedata_traverse_indirect_blocks(inode cur_inode, offset_container offs
       cur_blk_addr = util_char_array_to_int(data + offset.indirection_index[i]);
       
 #ifdef FS_DEBUG_ON
-      printf("Attempting to read disk block %d\n", block_addr);
+      printf("Attempting to read disk block %d\n", cur_blk_addr);
       printf(" Read status: %d\n", coreio_read_block(data, 1, cur_blk_addr));
 #else
       coreio_read_block(data, 1, cur_blk_addr);
