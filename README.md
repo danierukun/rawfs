@@ -1,4 +1,4 @@
 rawfs
 =====
 
-crude implementation of a basic ext2 filesystem
+crude implementation of a basic ext2 filesystem.
